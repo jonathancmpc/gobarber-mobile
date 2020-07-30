@@ -1,12 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Image } from 'react-native';
 
 import { Container } from './styles';
+
+import logoImg from '../../assets/logo.png'; // Inserido na pasta @types um tipo para parar o erro
 
 const SignIn: React.FC = () => {
   return (
     <Container>
-      <Text>Hello World SignIn</Text>
+      <Image source={logoImg} />
     </Container>
   );
 };
