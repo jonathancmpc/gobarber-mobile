@@ -11,7 +11,13 @@ import SignUp from '../pages/SignUp';
 const Auth = createStackNavigator();
 
 const AuthRoutes: React.FC = () => (
-  <Auth.Navigator>
+  <Auth.Navigator
+    /* Passando as configurações da navegação, onde headerShown false não mostrará mais o header automático e o cardStyle é o estilo de cada rota que neste caso recebe um background color */
+    screenOptions={{
+      headerShown: false,
+      cardStyle: { backgroundColor: '#312e38' },
+    }}
+  >
     <Auth.Screen name="SignIn" component={SignIn} />
     <Auth.Screen name="SignUp" component={SignUp} />
   </Auth.Navigator>
