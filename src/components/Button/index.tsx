@@ -11,7 +11,7 @@ interface ButtonProps extends RectButtonProperties {
   children: string;
 }
 
-const Button: React.FC = ({ children, ...rest }) => (
+const Button: React.FC<ButtonProps> = ({ children, ...rest }) => (
   /* Passando para o botão todas as propriedades de botão, além do children. Desta forma conseguimos passar que qualquer propriedade adicionada ao botão(componente) será passada aqui tbm, inclusive o onPress */
   <Container {...rest}>
     <ButtonText>{children}</ButtonText>
