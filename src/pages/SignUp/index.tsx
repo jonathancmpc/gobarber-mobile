@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -17,6 +18,8 @@ import logoImg from '../../assets/logo.png'; // Inserido na pasta @types um tipo
 import { Container, Title, BackToSign, BackToSignText } from './styles';
 
 const SignUp: React.FC = () => {
+  const { goBack } = useNavigation();
+
   return (
     <>
       {/* Verifica qual a plataforma(android ou ios) e aplica o efeito do teclado, para não ficar em cima do input. Se for ios vai aplicar um padding e se for android não passará nada */}
@@ -51,7 +54,11 @@ const SignUp: React.FC = () => {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <BackToSign onPress={() => {}}>
+      <BackToSign
+        onPress={() => {
+          goBack();
+        }}
+      >
         <Icon name="arrow-left" size={20} color="#fff" />
         <BackToSignText>Voltar para logon</BackToSignText>
       </BackToSign>
