@@ -17,6 +17,8 @@ const AuthRoutes: React.FC = () => (
       headerShown: false,
       cardStyle: { backgroundColor: '#312e38' },
     }}
+    /* Dessa forma a aplicação inicia logo no SignUp e fica mais fácil de desenvolvermos essa tela */
+    initialRouteName="SignUp"
   >
     <Auth.Screen name="SignIn" component={SignIn} />
     <Auth.Screen name="SignUp" component={SignUp} />
