@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-unused-expressions */
+import React, { useCallback, useRef } from 'react';
 /* O KeyboardAvoidingView serve para que o teclado não cubra o input */
 /* O Platform verifica se a plataforma é android ou ios */
 import {
@@ -9,6 +10,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+
+/* Importando unform */
+import { Form } from '@unform/mobile';
+/* Importando métodos do Unform */
+import { FormHandles } from '@unform/core';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -25,7 +31,13 @@ import {
 } from './styles';
 
 const SignIn: React.FC = () => {
+  /* Criando uma Ref para informar ao botão para dar submit, pois no React-Native não temos a funcionalidade de submit no botão */
+  const formRef = useRef<FormHandles>(null);
   const { navigate } = useNavigation();
+
+  const handleSignIn = useCallback((data: object) => {
+    console.log(data);
+  }, []);
 
   return (
     <>
@@ -46,12 +58,14 @@ const SignIn: React.FC = () => {
 
             <Title>Faça seu logon</Title>
 
-            <Input name="email" icon="mail" placeholder="E-mail" />
-            <Input name="password" icon="lock" placeholder="Senha" />
+            <Form ref={formRef} onSubmit={handleSignIn}>
+              <Input name="email" icon="mail" placeholder="E-mail" />
+              <Input name="password" icon="lock" placeholder="Senha" />
+            </Form>
 
             <Button
               onPress={() => {
-                console.log('nada');
+                formRef.current?.submitForm();
               }}
             >
               Entrar
