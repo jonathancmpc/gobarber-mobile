@@ -1,4 +1,6 @@
 import React, {
+  useState,
+  useCallback,
   useEffect,
   useRef,
   useImperativeHandle,
@@ -30,17 +32,32 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
+  /* Informações necessárias para cadastra o input dentro do Unform */
+  const { registerField, defaultValue = '', fieldName, error } = useField(name);
+  /* Usando Ref para recebermos o conteúdo do input e passando um valor inicial como o valor default digitado pelo usuário no input */
+  const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
+
+  /* Estados para verificarmos se o campo está com foco ou se está preenchido */
+  const [isFocused, setIsFocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
+  const handleInputFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setIsFocused(false);
+
+    /* Quando o input tiver algum valor, setamos o estado como true, se não falso */
+    setIsFilled(!!inputValueRef.current.value);
+  }, []);
+
   /* utilizando o hook e pasando a função para o elemento pai, onde criamos um elemento focus e passamos a referencia do objeto que queremos dar foco, que é o input */
   useImperativeHandle(ref, () => ({
     focus() {
       inputElementRef.current.focus();
     },
   }));
-
-  /* Informações necessárias para cadastra o input dentro do Unform */
-  const { registerField, defaultValue = '', fieldName, error } = useField(name);
-  /* Usando Ref para recebermos o conteúdo do input e passando um valor inicial como o valor default digitado pelo usuário no input */
-  const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
 
   useEffect(() => {
     registerField<string>({
@@ -61,8 +78,14 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }, [fieldName, registerField]);
 
   return (
-    <Container>
-      <Icon name={icon} size={20} color="#666360" />
+    /* Passamos ao container se o input tem foco ou não para fazermos a estilização */
+    <Container isFocused={isFocused}>
+      <Icon
+        /* Passada a propriedade para dizer se está preenchido ou não o campo para estilizarmos o ícone quando estiver preenchido */
+        isFilled={isFilled}
+        isFocused={isFocused}
+        name={icon}
+      />
 
       {/* Passando todas as propriedades de um input, menos name e icon que não são necessárias */}
       <TextInput
@@ -75,6 +98,10 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         onChangeText={value => {
           inputValueRef.current.value = value;
         }}
+        /* Verifica se tem foco e seta no estado atavés da função */
+        onFocus={handleInputFocus}
+        /* Verifica se está preenchido e seta no estado atavés da função */
+        onBlur={handleInputBlur}
         defaultValue={defaultValue}
         {...rest}
       />
