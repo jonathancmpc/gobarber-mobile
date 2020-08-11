@@ -76,7 +76,9 @@ const SignIn: React.FC = () => {
                 /* Mudando o botão enter do teclado para next */
                 returnKeyType="next"
                 /* Quando clicar no botão do teclado enter, ele chama a função para passar ao próximo campo, independente do formato do botão, utilizamos as Refs pra isso */
-                onSubmitEditing={() => {}}
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
+                }}
               />
               <Input
                 ref={passwordInputRef}

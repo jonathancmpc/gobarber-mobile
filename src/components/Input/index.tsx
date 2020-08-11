@@ -1,4 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 /* Importando todos os atributos do Input */
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
@@ -25,6 +30,12 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
+  /* utilizando o hook e pasando a função para o elemento pai, onde criamos um elemento focus e passamos a referencia do objeto que queremos dar foco, que é o input */
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputElementRef.current.focus();
+    },
+  }));
 
   /* Informações necessárias para cadastra o input dentro do Unform */
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
@@ -55,6 +66,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
       {/* Passando todas as propriedades de um input, menos name e icon que não são necessárias */}
       <TextInput
+        ref={inputElementRef}
         /* Configurando apar}encia do teclado no IOS */
         keyboardAppearance="dark"
         /* Cor do placeholder */
@@ -70,4 +82,4 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   );
 };
 
-export default Input;
+export default forwardRef(Input);
