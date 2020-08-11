@@ -10,18 +10,33 @@ interface InputProps extends TextInputProps {
   icon: string;
 }
 
+interface InputValueReference {
+  value: string;
+}
+
 const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
+  const inputElementRef = useRef<any>(null);
+
   /* Informações necessárias para cadastra o input dentro do Unform */
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   /* Usando Ref para recebermos o conteúdo do input e passando um valor inicial como o valor default digitado pelo usuário no input */
-  const inputValueRef = useRef({ value: defaultValue });
+  const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
 
   useEffect(() => {
-    registerField({
+    registerField<string>({
       name: fieldName,
       ref: inputValueRef.current,
       /* Onde vai buscar o valor do input */
       path: 'value',
+      setValue(ref: any, value) {
+        inputValueRef.current.value = value;
+        inputElementRef.current.setNativeProps({ text: value });
+      },
+      /* O que o Unform tem que fazer quando quiser limpar um campo */
+      clearValue() {
+        inputValueRef.current.value = '';
+        inputElementRef.current.clear();
+      },
     });
   }, [fieldName, registerField]);
 

@@ -35,6 +35,7 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { navigate } = useNavigation();
 
+  /* Pedindo para mostrar no console as informações de input quando o botão for clicado e as informações submetidas */
   const handleSignIn = useCallback((data: object) => {
     console.log(data);
   }, []);

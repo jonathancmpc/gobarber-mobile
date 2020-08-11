@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-unused-expressions */
+import React, { useRef, useCallback } from 'react';
 /* O KeyboardAvoidingView serve para que o teclado não cubra o input */
 /* O Platform verifica se a plataforma é android ou ios */
 import {
@@ -9,6 +10,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import { Form } from '@unform/mobile';
+/* Importando métodos do Unform */
+import { FormHandles } from '@unform/core';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -18,7 +22,15 @@ import logoImg from '../../assets/logo.png'; // Inserido na pasta @types um tipo
 import { Container, Title, BackToSign, BackToSignText } from './styles';
 
 const SignUp: React.FC = () => {
+  /* Criando uma Ref para informar ao botão para dar submit, pois no React-Native não temos a funcionalidade de submit no botão */
+  const formRef = useRef<FormHandles>(null);
+
   const { goBack } = useNavigation();
+
+  /* Pedindo para mostrar no console as informações de input quando o botão for clicado e as informações submetidas */
+  const handleSignIn = useCallback((data: object) => {
+    console.log(data);
+  }, []);
 
   return (
     <>
@@ -39,13 +51,15 @@ const SignUp: React.FC = () => {
 
             <Title>Crie sua conta</Title>
 
-            <Input name="name" icon="user" placeholder="Nome" />
-            <Input name="email" icon="mail" placeholder="E-mail" />
-            <Input name="password" icon="lock" placeholder="Senha" />
+            <Form ref={formRef} onSubmit={handleSignIn}>
+              <Input name="name" icon="user" placeholder="Nome" />
+              <Input name="email" icon="mail" placeholder="E-mail" />
+              <Input name="password" icon="lock" placeholder="Senha" />
+            </Form>
 
             <Button
               onPress={() => {
-                console.log('nada');
+                formRef.current?.submitForm();
               }}
             >
               Entrar
