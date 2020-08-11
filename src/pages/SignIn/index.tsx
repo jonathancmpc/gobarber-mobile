@@ -8,14 +8,17 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import * as Yup from 'yup';
 
 /* Importando unform */
 import { Form } from '@unform/mobile';
 /* Importando métodos do Unform */
 import { FormHandles } from '@unform/core';
+import getValidationErros from '../../utils/getValidationErros';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -31,6 +34,12 @@ import {
   CreateAccountButtonText,
 } from './styles';
 
+/* Interface para saber quais campos virão do formulário */
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   /* Criando uma Ref para informar ao botão para dar submit, pois no React-Native não temos a funcionalidade de submit no botão */
   const formRef = useRef<FormHandles>(null);
@@ -38,9 +47,58 @@ const SignIn: React.FC = () => {
   const passwordInputRef = useRef<TextInput>(null);
   const { navigate } = useNavigation();
 
-  /* Pedindo para mostrar no console as informações de input quando o botão for clicado e as informações submetidas */
-  const handleSignIn = useCallback((data: object) => {
-    console.log(data);
+  /* Função para validação de formulário */
+  const handleSignIn = useCallback(async (data: SignInFormData) => {
+    try {
+      // Zerando os erros antes de começar a validação
+      formRef.current?.setErrors({});
+
+      /* Criado um schema de validação, utilizado para validar um objeto inteiro(.object) e terá a forma descrita no .shape. No nosso caso teremos o campo de nome, email e senha */
+      const schema = Yup.object().shape({
+        /* Neste caso, além de ser string, obrigatório, deve ser um email */
+        email: Yup.string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        /* A senha é uma string com no mínimo 6 caracteres */
+        password: Yup.string().required('Senha obrigatória'),
+      });
+
+      // Aguarde a validação(await) do schema com os dados recebidos pelo form
+      // Passamos algumas configurações para a validação, como o abortEarly que retorna todos os erros que for encontrado(false), e não somente um(true). Recuperamos esses erros através do inner do validate(verificar o retorno do validate através do console.log(err)).
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      // Chamando o método signIn de dentro do nosso contexto de validação e passando os dados do usuário para validação na API e fornecimento das credenciais de usuário a todas as páginas dentro do Contexto.
+      /* await signIn({
+          email: data.email,
+          password: data.password,
+        }); */
+
+      /* Redirecionando para a página de Dashboard depois da autenticação */
+      // history.push('/dashboard');
+    } catch (err) {
+      // console.log(err);
+
+      // Se o erros forem originados no Yup validate através da instancia do Yup chamada ValidationError então pegamos os erros para mostrar
+      if (err instanceof Yup.ValidationError) {
+        // Utilizando a função que criamos para percorrer os erros e trazer um objeto com o name:mensagem que passamos no yup.
+        const errors = getValidationErros(err);
+        // console.log(errors);
+
+        // Enviando os erros para aparecer no input através do useRef/Unform com a variável error(input). Onde errors é um objeto retornado da função getValidationErrors com o name de cada input.
+        // Traz as mensagens de erros que configuramos no Yup.
+        formRef.current?.setErrors(errors);
+
+        /* Com o return, ele não continua processando o resto do código quando o erro não for de validação */
+        return;
+      }
+
+      Alert.alert(
+        'Erro na autenticação',
+        'Ocorreu um erro ao fazer login, cheque as credênciais',
+      );
+    }
   }, []);
 
   return (

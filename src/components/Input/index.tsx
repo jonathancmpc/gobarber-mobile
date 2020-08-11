@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, {
   useState,
   useCallback,
@@ -79,7 +80,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
   return (
     /* Passamos ao container se o input tem foco ou não para fazermos a estilização */
-    <Container isFocused={isFocused}>
+    <Container isFocused={isFocused} isErrored={!!error}>
       <Icon
         /* Passada a propriedade para dizer se está preenchido ou não o campo para estilizarmos o ícone quando estiver preenchido */
         isFilled={isFilled}
