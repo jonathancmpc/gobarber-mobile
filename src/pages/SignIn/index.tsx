@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -33,6 +34,8 @@ import {
 const SignIn: React.FC = () => {
   /* Criando uma Ref para informar ao botão para dar submit, pois no React-Native não temos a funcionalidade de submit no botão */
   const formRef = useRef<FormHandles>(null);
+  /* Utilizamos essa ref para executarmos a função de quando o usuário clicar no botão enter, ele passar para o próximo input */
+  const passwordInputRef = useRef<TextInput>(null);
   const { navigate } = useNavigation();
 
   /* Pedindo para mostrar no console as informações de input quando o botão for clicado e as informações submetidas */
@@ -60,8 +63,35 @@ const SignIn: React.FC = () => {
             <Title>Faça seu logon</Title>
 
             <Form ref={formRef} onSubmit={handleSignIn}>
-              <Input name="email" icon="mail" placeholder="E-mail" />
-              <Input name="password" icon="lock" placeholder="Senha" />
+              <Input
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                /* Tirando a correção automática de texto */
+                autoCorrect={false}
+                /* Tira a caixa alta automática no início de cada palavra */
+                autoCapitalize="none"
+                /* Trocando o tipo de teclado para esse input */
+                keyboardType="email-address"
+                /* Mudando o botão enter do teclado para next */
+                returnKeyType="next"
+                /* Quando clicar no botão do teclado enter, ele chama a função para passar ao próximo campo, independente do formato do botão, utilizamos as Refs pra isso */
+                onSubmitEditing={() => {}}
+              />
+              <Input
+                ref={passwordInputRef}
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                /* Escodendo a senha */
+                secureTextEntry
+                /* Mudando o botão enter do teclado para send(enviar) */
+                returnKeyType="send"
+                /* Quando clicar no botão do teclado enter, ele chama a função para fazer o submit, independente do formato do botão */
+                onSubmitEditing={() => {
+                  formRef.current?.submitForm();
+                }}
+              />
             </Form>
 
             <Button

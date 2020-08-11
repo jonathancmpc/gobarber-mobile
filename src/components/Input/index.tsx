@@ -14,7 +14,16 @@ interface InputValueReference {
   value: string;
 }
 
-const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
+interface InputRef {
+  focus(): void;
+}
+
+/* Como estamos recebendo uma referência como parâmetro no SigIn, temos que passar ela para este componente, e o Ref é o único parâmetro que não podemos passar como padrão do componente, por isso temos que mudar de React.FC para React.ForwardingComponent, dessa forma passamos o Ref fora, como segundo parâmetro */
+/* No primeiro parâmetro do tipo passamos o tipo da ref(InputRef) e no segundo passamos o tipo do resto das propriedades(<InputProps>) */
+const Input: React.RefForwardingComponent<InputRef, InputProps> = (
+  { name, icon, ...rest },
+  ref,
+) => {
   const inputElementRef = useRef<any>(null);
 
   /* Informações necessárias para cadastra o input dentro do Unform */
