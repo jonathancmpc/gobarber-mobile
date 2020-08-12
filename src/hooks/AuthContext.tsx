@@ -23,6 +23,7 @@ interface SignInCredentials {
 // A interface neste caso será tudo que iremos guardar na nossa variável authContext.
 interface AuthContextData {
   user: object;
+  loading: boolean;
   signIn(credentialsUsers: SignInCredentials): Promise<void>;
   signOut(): void;
 }
@@ -35,6 +36,8 @@ const AuthProvider: React.FC = ({ children }) => {
   // Criando um estado para gravar as informações de usuário, dessa forma passamos as informações pelo contexto, ao invés de usar o local storage.
   // Caso as informações já estejam no localStorage, retornamos o estado com essas informações, se não, ele busca as informações na API.
   const [data, setData] = useState<AuthState>({} as AuthState);
+  /* Estado para armazenar true enquando a aplicação está fazendo o processo de incluir/buscar as informações do usuário no storage */
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadStoragedData(): Promise<void> {
@@ -46,6 +49,9 @@ const AuthProvider: React.FC = ({ children }) => {
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+
+      /* Setamos o carregamento como false, pois já foi feita a verificação de usuário e token acima */
+      setLoading(false);
     }
 
     loadStoragedData();
@@ -76,10 +82,12 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
-  // Retorna um módulo com as informações do usuário através do contexto. Repassamos o método signIn com as informações do usuário
+  // Retorna um módulo com as informações do usuário através do contexto. Repassamos os métodos e variáveis com as informações do usuário/página/processamento para todos os componentes que utilizarem esse contexto/hook.
   return (
     <>
-      <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+      <AuthContext.Provider
+        value={{ user: data.user, loading, signIn, signOut }}
+      >
         {children}
       </AuthContext.Provider>
     </>
